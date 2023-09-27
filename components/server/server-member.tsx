@@ -1,9 +1,12 @@
 "use client"
 
-import { cn } from "@/lib/utils"
+import { checkUserIsOnline, cn } from "@/lib/utils"
+import { ActiveUsersProps } from "@/type"
 import { Member, MemberRole, Profile, Server } from "@prisma/client"
 import { ShieldAlert, ShieldCheck } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
+import { useEffect } from "react"
+import { useSocket } from "../providers/socket-provider"
 import UserAvatar from "../user-avatar"
 
 interface ServerMemberProps {
@@ -20,6 +23,7 @@ const roleIconMap = {
 const ServerMember = ({ member, server }: ServerMemberProps) => {
   const params = useParams()
   const router = useRouter()
+  const { onlineUser } = useSocket()
 
   const icon = roleIconMap[member.role]
 
@@ -38,6 +42,7 @@ const ServerMember = ({ member, server }: ServerMemberProps) => {
       <UserAvatar 
         src={member.profile.imageUrl} 
         className="w-8 h-8 md:h-8 md:w-8"
+        onlineIndicator={checkUserIsOnline(onlineUser, member.profile.id)}
       />
       <p className={cn(
         "font-semibold text-sm text-zinc-500 group-hover:text-zinc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300 transition",

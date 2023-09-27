@@ -14,3 +14,8 @@ export type NextApiResponseServerIo = NextApiResponse & {
     }
   }
 }
+
+export type ActiveUsersProps = {
+  userId: string
+  socketId: string
+}

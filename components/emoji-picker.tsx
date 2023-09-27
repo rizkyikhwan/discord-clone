@@ -2,9 +2,15 @@
 
 import { Smile } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import Picker from "@emoji-mart/react"
+// import Picker from "@emoji-mart/react"
 import data from "@emoji-mart/data"
 import { useTheme } from "next-themes"
+import dynamic from 'next/dynamic'
+
+const Picker = dynamic(
+  () => import('@emoji-mart/react'),
+  { ssr: false }
+)
 
 interface EmojiPickerProps {
   onChange: (value: string) => void

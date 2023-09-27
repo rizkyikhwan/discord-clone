@@ -12,6 +12,8 @@ import { useState } from "react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MemberRole } from "@prisma/client"
 import { useRouter } from "next/navigation"
+import { checkUserIsOnline } from "@/lib/utils"
+import { useSocket } from "@/components/providers/socket-provider"
 
 const roleIconMap = {
   "GUEST" : null,
@@ -21,6 +23,7 @@ const roleIconMap = {
 
 const MembersModal = () => {
   const router = useRouter()
+  const { onlineUser } = useSocket()
   const { onOpen, isOpen, onClose, type, data } = useModal()
   const [loadingId, setLoadingId] = useState("")
 
@@ -83,7 +86,7 @@ const MembersModal = () => {
         <ScrollArea className="mt-8 max-h-[420px] pr-6">
           {server?.members?.map(member => (
             <div key={member.id} className="flex items-center mb-6 gap-x-2">
-              <UserAvatar src={member.profile.imageUrl} />
+              <UserAvatar src={member.profile.imageUrl} onlineIndicator={checkUserIsOnline(onlineUser, member.profile.id)} />
               <div className="flex flex-col gap-y-1">
                 <div className="flex items-center text-xs font-semibold gap-x-1">
                   {member.profile.name}
