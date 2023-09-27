@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Video, VideoOff } from "lucide-react"
 import ActionTooltip from "@/components/action-tooltip"
 
-const ChantVideoButton = () => {
+const ChatVideoButton = () => {
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -34,4 +34,4 @@ const ChantVideoButton = () => {
     </ActionTooltip>
   )
 }
-export default ChantVideoButton
+export default ChatVideoButton

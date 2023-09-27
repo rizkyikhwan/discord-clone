@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { LiveKitRoom, VideoConference } from "@livekit/components-react"
+import { AudioConference, LiveKitRoom, VideoConference } from "@livekit/components-react"
 import "@livekit/components-styles"
 import { Channel } from "@prisma/client"
 import { useUser } from "@clerk/nextjs"
@@ -55,7 +55,12 @@ const MediaRoom = ({ chatId, video, audio }: MediaRoomProps) => {
       video={video}
       audio={audio}
     >
-      <VideoConference />
+      {!video && (
+        <AudioConference />
+      )}
+      {video && (
+        <VideoConference />
+      )}
     </LiveKitRoom>
   )
 }
