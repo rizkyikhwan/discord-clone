@@ -28,38 +28,56 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [onlineUser, setOnlineUser] = useState([])
 
   useEffect(() => {
-      const socketInstance = new (ClientIO as any)(process.env.NEXT_PUBLIC_SITE_URL!, {
-        path: "/api/socket/io",
-        addTrailingSlash: false
-      })
+    let id: string
 
-      socketInstance.on("connect", () => {
-        if (user) {
-          (async () => {
-            try {
-              const res = await axios.get(`/api/user/${user.id}`)
-              const data = await res.data
-              socketInstance.emit("new-user-add", data.id)
-            } catch (error) {
-              console.log(error);
-            }
-          })()   
-          setIsConnected(true)
-  
-          socketInstance.on("get-users", (user: []) => {
-            setOnlineUser(user)
-          })
-        }
-      })
+    const socketInstance = new (ClientIO as any)(process.env.NEXT_PUBLIC_SITE_URL!, {
+      path: "/api/socket/io",
+      addTrailingSlash: false
+    })
 
-      socketInstance.on("disconnect", () => {
-        setIsConnected(false)
+    socketInstance.on("connect", () => {
+      if (user) {
+        (async () => {
+          try {
+            const res = await axios.get(`/api/user/${user.id}`)
+            const data = await res.data
+            id = data.id
+            socketInstance.emit("new-user-add", data.id)
+          } catch (error) {
+            console.log(error);
+          }
+        })()   
+        
+        socketInstance.on("get-users", (user: []) => {
+          setOnlineUser(user)
+        })
 
-        socketInstance.emit("offline");
-      })
+        setIsConnected(true)
+      }
+    })
 
-      setSocket(socketInstance)
-      return () => socketInstance.disconnect()
+    socketInstance.on("disconnect", () => {
+      setIsConnected(false)
+    })
+
+    const handleFocus = () => {
+      socketInstance.emit("new-user-add", id)
+    }
+
+    const handleCloseTab = () => {
+      socketInstance.emit("offline");
+    }
+
+    setSocket(socketInstance)
+
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("beforeunload", handleCloseTab)
+
+    return () => {
+      socketInstance.disconnect()
+      window.removeEventListener("focus", handleFocus)
+      window.removeEventListener("beforeunload", handleCloseTab)
+    }
   }, [user])
 
   return (
